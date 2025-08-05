@@ -1,0 +1,146 @@
+{
+  "project": "OnboardLink",
+  "purpose": "Streamlined onboarding portal for IMTOs partnering with Sterling Bank",
+  "stack": {
+    "frontend": "Next.js 15.3.3, React 18, TypeScript, Tailwind, Radix UI",
+    "backend": "Firebase (Auth, Firestore, Storage), Google Genkit",
+    "validation": "Zod + React Hook Form",
+    "state": "React Context API"
+  },
+  "files": {
+    "src/app/page.tsx": {
+      "path": "src/app/page.tsx",
+      "context": "client",
+      "role": "UI",
+      "purpose": "Landing page component",
+      "imports": ["@/components/ui/*", "lucide-react", "next/link"],
+      "exports": ["default Home component"],
+      "issues": ["None - pure UI component"]
+    },
+    "src/app/layout.tsx": {
+      "path": "src/app/layout.tsx",
+      "context": "hybrid",
+      "role": "UI",
+      "purpose": "Root layout with auth provider",
+      "imports": ["@/components/ui/toaster", "@/hooks/use-auth"],
+      "exports": ["metadata", "default RootLayout"],
+      "issues": ["Contains both server (metadata) and client (AuthProvider) logic"]
+    },
+    "src/app/login/page.tsx": {
+      "path": "src/app/login/page.tsx",
+      "context": "client",
+      "role": "UI",
+      "purpose": "Login form component",
+      "imports": ["firebase/auth", "firebase/firestore", "@/lib/firebase", "@/lib/firestore"],
+      "exports": ["default LoginPage"],
+      "issues": ["Direct Firebase usage in component - should use server actions"]
+    },
+    "src/app/admin/page.tsx": {
+      "path": "src/app/admin/page.tsx",
+      "context": "client",
+      "role": "UI",
+      "purpose": "Admin dashboard component",
+      "imports": ["firebase/auth", "firebase/firestore", "@/lib/firebase", "@/lib/firestore"],
+      "exports": ["default AdminDashboard"],
+      "issues": ["Direct Firebase usage in component - should use server actions"]
+    },
+    "src/app/onboarding/layout.tsx": {
+      "path": "src/app/onboarding/layout.tsx",
+      "context": "client",
+      "role": "UI",
+      "purpose": "Onboarding flow layout",
+      "imports": ["@/components/onboarding-progress", "@/hooks/use-submission-provider"],
+      "exports": ["default OnboardingLayout"],
+      "issues": ["None - proper client component"]
+    },
+    "src/lib/firebase.ts": {
+      "path": "src/lib/firebase.ts",
+      "context": "hybrid",
+      "role": "firebase",
+      "purpose": "Firebase client configuration",
+      "imports": ["firebase/app", "firebase/auth", "firebase/firestore", "firebase/storage"],
+      "exports": ["auth", "db", "storage"],
+      "issues": ["Should be split into client.ts and admin.ts"]
+    },
+    "src/lib/firestore.ts": {
+      "path": "src/lib/firestore.ts",
+      "context": "hybrid",
+      "role": "firebase",
+      "purpose": "Firestore operations and types",
+      "imports": ["firebase/firestore", "./firebase"],
+      "exports": ["Types", "CRUD functions"],
+      "issues": ["Contains both client and server logic - needs separation"]
+    },
+    "src/lib/storage.ts": {
+      "path": "src/lib/storage.ts",
+      "context": "client",
+      "role": "firebase",
+      "purpose": "Firebase storage operations",
+      "imports": ["firebase/storage", "./firebase"],
+      "exports": ["uploadUserFile", "deleteUserFile"],
+      "issues": ["Client-side file operations - consider server actions"]
+    },
+    "src/hooks/use-auth.tsx": {
+      "path": "src/hooks/use-auth.tsx",
+      "context": "client",
+      "role": "auth",
+      "purpose": "Authentication context and hook",
+      "imports": ["firebase/auth", "firebase/firestore", "@/lib/firebase"],
+      "exports": ["AuthProvider", "useAuth"],
+      "issues": ["Direct Firebase usage - consider server-side auth"]
+    },
+    "src/hooks/use-submission-provider.tsx": {
+      "path": "src/hooks/use-submission-provider.tsx",
+      "context": "client",
+      "role": "form",
+      "purpose": "Submission state management",
+      "imports": ["@/lib/firestore", "@/lib/storage"],
+      "exports": ["SubmissionProvider"],
+      "issues": ["Direct Firebase operations - should use server actions"]
+    },
+    "src/components/company-info-form.tsx": {
+      "path": "src/components/company-info-form.tsx",
+      "context": "client",
+      "role": "form",
+      "purpose": "Company information form",
+      "imports": ["react-hook-form", "zod", "@/lib/firestore", "@/lib/storage"],
+      "exports": ["CompanyInfoForm"],
+      "issues": ["Direct Firebase operations in component"]
+    },
+    "src/ai/genkit.ts": {
+      "path": "src/ai/genkit.ts",
+      "context": "server",
+      "role": "util",
+      "purpose": "AI configuration",
+      "imports": ["genkit", "@genkit-ai/googleai"],
+      "exports": ["ai"],
+      "issues": ["None - proper server-side AI config"]
+    }
+  },
+  "refactor_priorities": [
+    {
+      "priority": 1,
+      "task": "Split Firebase configuration",
+      "files": ["src/lib/firebase.ts"],
+      "action": "Create separate client.ts and admin.ts files"
+    },
+    {
+      "priority": 2,
+      "task": "Implement server actions",
+      "files": ["src/lib/firestore.ts", "src/lib/storage.ts"],
+      "action": "Move server operations to app/api or server actions"
+    },
+    {
+      "priority": 3,
+      "task": "Create Zod schemas",
+      "files": ["All form components"],
+      "action": "Extract validation schemas to lib/schemas"
+    },
+    {
+      "priority": 4,
+      "task": "Refactor components",
+      "files": ["All form components"],
+      "action": "Remove direct Firebase calls, use server actions"
+    }
+  ]
+}
