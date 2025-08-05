@@ -42,7 +42,7 @@ const permissionOptions: { value: StagePermission, label: string }[] = [
     { value: 'comment', label: 'Comment & Review' },
 ];
 
-export default function EditUserPage({ params }: { params: { id: string } }) {
+export default function EditUserPage({ params }: { params: Promise<{ id: string }> }) {
   const [userToEdit, setUserToEdit] = useState<UserProfile | null>(null);
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('admin');
@@ -53,7 +53,7 @@ export default function EditUserPage({ params }: { params: { id: string } }) {
   const router = useRouter();
   const { toast } = useToast();
   const { userProfile, loading: authLoading } = useAuth();
-  const resolvedParams = use(Promise.resolve(params));
+  const resolvedParams = use(params);
 
   useEffect(() => {
     if (authLoading) return;

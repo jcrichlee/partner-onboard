@@ -12,6 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useFormContext } from "react-hook-form";
 import { useSubmission } from "@/hooks/use-submission-client";
 import { type OnboardingFile } from "@/lib/firestore";
+import { type FileUpload as FileUploadType, type EnhancedFileUpload } from "@/lib/schemas";
+import { type OnboardingFile as OnboardingFileSteps } from "@/lib/schemas/onboarding-steps";
 
 type FileUploadProps = {
   id: string;
@@ -21,7 +23,7 @@ type FileUploadProps = {
   tooltip?: string;
   templateUrl?: string;
   multiple?: boolean;
-  existingFiles?: OnboardingFile[];
+  existingFiles?: (OnboardingFile | FileUploadType | EnhancedFileUpload | OnboardingFileSteps)[];
 };
 
 export function FileUpload({
@@ -82,8 +84,8 @@ export function FileUpload({
     setValue(id, updatedFiles, { shouldValidate: true, shouldDirty: true });
   }
 
-  const handleRemoveExistingFile = async (file: OnboardingFile) => {
-    await removeFile(file);
+  const handleRemoveExistingFile = async (file: OnboardingFile | FileUploadType | EnhancedFileUpload | OnboardingFileSteps) => {
+    await removeFile(file as FileUploadType | OnboardingFileSteps);
   };
 
   const showUploadField = multiple || (localFiles.length === 0 && existingFiles.length === 0);

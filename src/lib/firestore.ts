@@ -4,6 +4,7 @@ import { db } from "./firebase/client";
 import { auth } from "./firebase/client";
 
 export type OnboardingFile = {
+    id?: string; // Optional for backward compatibility
     name: string;
     url: string;
     storagePath: string; // The full path in Firebase Storage

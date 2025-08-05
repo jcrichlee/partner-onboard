@@ -137,7 +137,7 @@ function SubmissionDetailSkeleton() {
   )
 }
 
-export default function SubmissionDetailPage({ params }: { params: { id: string } }) {
+export default function SubmissionDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const [submission, setSubmission] = useState<OnboardingSubmission | null>(null);
   const [loading, setLoading] = useState(true);
   const [previewFileUrl, setPreviewFileUrl] = useState<string | null>(null);
@@ -147,7 +147,7 @@ export default function SubmissionDetailPage({ params }: { params: { id: string 
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
   const router = useRouter();
-  const resolvedParams = use(Promise.resolve(params)) as { id: string };
+  const resolvedParams = use(params) as { id: string };
 
   useEffect(() => {
     const id = resolvedParams.id;

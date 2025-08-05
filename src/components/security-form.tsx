@@ -13,7 +13,6 @@ import { Switch } from "@/components/ui/switch";
 import { FileUpload } from "@/components/file-upload";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { useSubmission } from "@/hooks/use-submission-client";
-import { OnboardingFile } from "@/lib/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { uploadUserFile } from "@/lib/storage";
@@ -31,7 +30,7 @@ type FormData = z.infer<typeof formSchema>;
 
 export function SecurityForm() {
   const router = useRouter();
-  const { submission, update, isLoading } = useSubmission();
+  const { submission, updateSubmission: update, loading: isLoading } = useSubmission();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -56,7 +55,7 @@ export function SecurityForm() {
     if (!submission) return false;
 
     try {
-        let allFiles: OnboardingFile[] = submission.files || [];
+        let allFiles: any[] = submission.files || [];
         
         const fileFields: { id: keyof FormData, category: string, multiple?: boolean }[] = [
             { id: "infosec-policy", category: "Security", multiple: true },
@@ -69,7 +68,7 @@ export function SecurityForm() {
             if (filesToUpload && filesToUpload.length > 0) {
                  for (const file of filesToUpload) {
                     if (!(file instanceof File)) continue;
-                    const newFile = await uploadUserFile(file, submission, field.category, field.id);
+                    const newFile = await uploadUserFile(file, submission as any, field.category, field.id);
                     if (field.multiple) {
                         allFiles = [...(allFiles.filter(f => f.category !== field.category || !filesToUpload.some(fu => fu.name === f.name))), newFile];
                     } else {
@@ -158,7 +157,10 @@ export function SecurityForm() {
               description="Upload your company's main information security policy document."
               category="Security"
               multiple
-              existingFiles={submission.files.filter(f => f.fieldName === 'infosec-policy')}
+              existingFiles={submission.files?.filter(f => 
+                ('fieldName' in f && f.fieldName === 'infosec-policy') ||
+                ('fieldId' in f && f.fieldId === 'infosec-policy')
+              ) || []}
             />
             <FileUpload
               id="dr-plan"
@@ -166,7 +168,10 @@ export function SecurityForm() {
               description="Upload your BCDR plan."
               category="Security"
               multiple
-              existingFiles={submission.files.filter(f => f.fieldName === 'dr-plan')}
+              existingFiles={submission.files?.filter(f => 
+                ('fieldName' in f && f.fieldName === 'dr-plan') ||
+                ('fieldId' in f && f.fieldId === 'dr-plan')
+              ) || []}
             />
             <FileUpload
               id="iso-27001"
@@ -174,7 +179,10 @@ export function SecurityForm() {
               description="If applicable, upload your ISO 27001 certification."
               category="Security"
               multiple
-              existingFiles={submission.files.filter(f => f.fieldName === 'iso-27001')}
+              existingFiles={submission.files?.filter(f => 
+                ('fieldName' in f && f.fieldName === 'iso-27001') ||
+                ('fieldId' in f && f.fieldId === 'iso-27001')
+              ) || []}
             />
             <div className="space-y-6">
               <FormField
