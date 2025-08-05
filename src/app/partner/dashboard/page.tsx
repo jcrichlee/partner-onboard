@@ -13,7 +13,7 @@ import {
 import { ChatThread } from "./chat";
 import { Timeline } from "./timeline";
 import { useEffect, useState, useMemo } from "react";
-import { auth } from "@/lib/firebase";
+import { auth } from "@/lib/firebase/client";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { ChatMessage } from "@/lib/firestore";
 import { Button } from "@/components/ui/button";

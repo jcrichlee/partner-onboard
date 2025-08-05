@@ -31,7 +31,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase/client";
 import type { OnboardingSubmission, UserProfile, DashboardMetrics, UserNotification } from "@/lib/firestore";
 import { getSubmissions, getDashboardMetrics, updateUser } from "@/lib/firestore";
 import { formatBytes } from "@/lib/utils";

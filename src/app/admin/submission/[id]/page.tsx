@@ -84,7 +84,7 @@ function SubmissionDetailSkeleton() {
                 </Card>
                 {/* Category Card Skeletons */}
                 {[...Array(2)].map((_, i) => (
-                  <Card key={i} className="rounded-xl shadow-md">
+                  <Card key={`skeleton-card-${i}`} className="rounded-xl shadow-md">
                     <CardHeader>
                       <Skeleton className="h-6 w-1/3" />
                     </CardHeader>
@@ -116,7 +116,7 @@ function SubmissionDetailSkeleton() {
                           <CardContent>
                               <div className="space-y-8">
                                   {[...Array(3)].map((_, i) => (
-                                      <div key={i} className="flex gap-4">
+                                      <div key={`skeleton-timeline-${i}`} className="flex gap-4">
                                           <Skeleton className="h-10 w-10 rounded-full shrink-0" />
                                           <div className="flex-1 space-y-2">
                                               <Skeleton className="h-4 w-full" />
@@ -449,7 +449,7 @@ export default function SubmissionDetailPage({ params }: { params: Promise<{ id:
                                                     </div>
                                                     <div className="space-y-4 max-h-60 overflow-y-auto pr-2">
                                                         {categoryChat.map((message, index) => (
-                                                             <div key={index} className={cn("flex items-start gap-3", message.from === 'admin' ? "justify-start" : "justify-end")}>
+                                             <div key={`${category}-message-${index}-${message.time}`} className={cn("flex items-start gap-3", message.from === 'admin' ? "justify-start" : "justify-end")}>
                                                                  {message.from === 'admin' && (
                                                                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20 text-primary font-semibold text-xs">
                                                                         {message.adminName?.substring(0, 2).toUpperCase() || 'AD'}
