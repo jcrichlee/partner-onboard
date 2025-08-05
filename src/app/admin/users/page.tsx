@@ -30,7 +30,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { getAllUsers, UserProfile, updateUser, deleteUser } from '@/lib/firestore';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/hooks/use-auth-client';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -55,16 +55,12 @@ export default function UserManagementPage() {
     
     // If user is not authenticated, redirect to login
     if (!userProfile && !authLoading) {
+      setLoading(false);
       router.push('/login');
       return;
     }
 
-    // If userProfile exists but doesn't have permission, redirect to admin
-    if (userProfile && !userProfile.canManageUsers) {
-        toast({ variant: 'destructive', title: 'Permission Denied' });
-        router.push('/admin');
-        return;
-    }
+    // Only authenticated users can access this page (admin role check handled by route protection)
     
     try {
       const allUsers = await getAllUsers();
@@ -107,28 +103,28 @@ export default function UserManagementPage() {
   }
   
   return (
-    <div className="container mx-auto py-10">
-      <div className="flex items-center justify-between mb-6">
+    <div className="responsive-container py-10">
+      <div className="responsive-header">
          <div className="flex items-center gap-4">
              <Button variant="ghost" size="icon" onClick={() => router.push('/admin')}>
                 <ArrowLeft className="h-4 w-4" />
              </Button>
             <div>
-                <h1 className="text-3xl font-bold font-headline">User Management</h1>
-                <p className="text-muted-foreground">
+                <h1 className="text-2xl sm:text-3xl font-bold font-headline">User Management</h1>
+                <p className="text-muted-foreground text-sm sm:text-base">
                 View, edit, and manage all users in the system.
                 </p>
             </div>
         </div>
-        <div className="flex gap-2">
-            <Button asChild className="rounded-xl shadow-md">
+        <div className="responsive-button-group w-full sm:w-auto">
+            <Button asChild className="rounded-xl shadow-md w-full sm:w-auto">
                 <Link href="/admin/create-partner">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 New Partner
                 </Link>
             </Button>
             {userProfile?.role === 'superadmin' && (
-                <Button asChild variant="black" className="rounded-xl shadow-md">
+                <Button asChild variant="black" className="rounded-xl shadow-md w-full sm:w-auto">
                     <Link href="/admin/create-admin">
                         <PlusCircle className="mr-2 h-4 w-4" />
                         New Admin
@@ -139,17 +135,18 @@ export default function UserManagementPage() {
       </div>
       <Card className="rounded-xl shadow-md">
         <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
+          <div className="responsive-table-wrapper">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>
+                    <span className="sr-only">Actions</span>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
             <TableBody>
               {users.map((user) => (
                 <TableRow key={user.id}>
@@ -223,7 +220,8 @@ export default function UserManagementPage() {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

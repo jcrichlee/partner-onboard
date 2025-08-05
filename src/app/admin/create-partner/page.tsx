@@ -83,8 +83,10 @@ export default function CreatePartnerPage() {
 
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Card className="w-full max-w-md mx-4 rounded-xl shadow-md">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12">
+      <div className="responsive-container">
+        <div className="max-w-md mx-auto">
+          <Card className="rounded-xl shadow-md">
          <CardHeader>
           <div className="flex items-center justify-between">
              <Button variant="ghost" size="icon" onClick={() => router.back()}>
@@ -168,6 +170,8 @@ export default function CreatePartnerPage() {
           </form>
         </CardContent>
       </Card>
+        </div>
+      </div>
     </div>
   );
 }

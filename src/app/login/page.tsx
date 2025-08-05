@@ -79,8 +79,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <Card className="w-full max-w-md mx-4 rounded-xl shadow-md">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12">
+      <div className="responsive-container">
+        <div className="max-w-md mx-auto space-y-8">
+          <div className="text-center">
+            <h2 className="mt-6 text-2xl sm:text-3xl font-extrabold text-gray-900">
+              Sign in to your account
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              Access the IMTO onboarding portal
+            </p>
+          </div>
+          
+          <Card className="mt-8 rounded-xl shadow-md">
         <CardHeader className="text-center">
           <Link
             href="/"
@@ -156,6 +167,8 @@ export default function LoginPage() {
           </div>
         </CardContent>
       </Card>
+        </div>
+      </div>
     </div>
   );
 }

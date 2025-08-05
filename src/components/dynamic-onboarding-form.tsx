@@ -319,21 +319,22 @@ export function DynamicOnboardingForm({ stepId, className }: DynamicOnboardingFo
               {currentStep.fields.map(renderField)}
 
               {/* Navigation buttons */}
-              <div className="flex justify-between pt-6">
+              <div className="responsive-button-group pt-6">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={goToPreviousStep}
                   disabled={currentStepIndex === 0 || isLoading}
+                  className="flex items-center justify-center gap-2 w-full sm:w-auto order-2 sm:order-1"
                 >
-                  <ChevronLeft className="mr-2 h-4 w-4" />
+                  <ChevronLeft className="w-4 h-4" />
                   Previous
                 </Button>
                 
                 <Button
                   type="submit"
                   disabled={!isValid || isLoading}
-                  className="min-w-[120px]"
+                  className="flex items-center justify-center gap-2 w-full sm:w-auto order-1 sm:order-2 min-w-[120px]"
                 >
                   {isLoading ? (
                     "Saving..."
@@ -342,7 +343,7 @@ export function DynamicOnboardingForm({ stepId, className }: DynamicOnboardingFo
                   ) : (
                     <>
                       Next
-                      <ChevronRight className="ml-2 h-4 w-4" />
+                      <ChevronRight className="w-4 h-4" />
                     </>
                   )}
                 </Button>

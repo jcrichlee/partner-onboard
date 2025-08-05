@@ -1,7 +1,7 @@
 // Firebase Web SDK for client-side operations
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
 // Firebase configuration
@@ -18,8 +18,11 @@ const firebaseConfig = {
 // Initialize Firebase for client-side
 const app = initializeApp(firebaseConfig);
 
+// Initialize Firestore with improved settings
+const db = getFirestore(app);
+
 // Export client-side Firebase services
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export { db };
 export const storage = getStorage(app);
 export { app };

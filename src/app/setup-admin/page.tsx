@@ -36,6 +36,7 @@ export default function SetupAdminPage() {
       await setDoc(doc(db, "users", user.uid), {
         email: user.email,
         role: 'superadmin',
+        canManageUsers: true, // Superadmins can always manage users
       });
 
       toast({

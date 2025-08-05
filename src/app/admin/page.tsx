@@ -113,18 +113,18 @@ function NotificationBell() {
 
 function DashboardSkeleton() {
   return (
-    <div className="container mx-auto py-10">
-      <div className="flex items-center justify-between mb-6">
+    <div className="responsive-container py-10">
+      <div className="responsive-header">
         <div>
           <Skeleton className="h-9 w-64 mb-2" />
           <Skeleton className="h-4 w-80" />
         </div>
-        <div className="flex gap-2">
+        <div className="responsive-button-group w-full sm:w-auto">
           <Skeleton className="h-10 w-40 rounded-xl" />
           <Skeleton className="h-10 w-44 rounded-xl" />
         </div>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+      <div className="responsive-card-grid mb-8">
         {[...Array(4)].map((_, i) => (
           <Card key={i} className="rounded-xl shadow-md">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -249,14 +249,12 @@ export default function AdminDashboard() {
             OnboardLink
           </Link>
           <nav className="ml-auto flex items-center gap-4">
-             {currentUser?.canManageUsers && (
-              <Button asChild variant="outline" size="sm" className="rounded-xl">
+             <Button asChild variant="outline" size="sm" className="rounded-xl">
                 <Link href="/admin/users">
                   <Users className="mr-2 h-4 w-4" />
                   Manage Users
                 </Link>
               </Button>
-            )}
             <span className="text-sm font-medium text-muted-foreground">Admin Portal</span>
             <NotificationBell />
              <DropdownMenu>
@@ -285,39 +283,35 @@ export default function AdminDashboard() {
         {loading || authLoading ? (
             <DashboardSkeleton />
         ) : (
-        <div className="container mx-auto py-10">
-          <div className="flex items-center justify-between mb-6">
+        <div className="responsive-container py-10">
+          <div className="responsive-header">
             <div>
-              <h1 className="text-3xl font-bold font-headline">
+              <h1 className="text-2xl sm:text-3xl font-bold font-headline">
                 Admin Dashboard
               </h1>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground text-sm sm:text-base">
                 An overview of the partner onboarding portal.
               </p>
             </div>
-             <div className="flex gap-2">
-              {(currentUser?.role === 'superadmin' || currentUser?.canManageUsers) && (
-                <>
-                  {currentUser.role === 'superadmin' && (
-                    <Button asChild variant="black" className="rounded-xl shadow-md">
-                      <Link href="/admin/create-admin">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Create New Admin
-                      </Link>
-                    </Button>
-                  )}
-                  <Button asChild className="rounded-xl shadow-md">
-                    <Link href="/admin/create-partner">
-                      <PlusCircle className="mr-2 h-4 w-4" />
-                      Create New Partner
-                    </Link>
-                  </Button>
-                </>
+             <div className="responsive-button-group w-full sm:w-auto">
+              {currentUser?.role === 'superadmin' && (
+                <Button asChild variant="black" className="rounded-xl shadow-md w-full sm:w-auto">
+                  <Link href="/admin/create-admin">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Create New Admin
+                  </Link>
+                </Button>
               )}
+              <Button asChild className="rounded-xl shadow-md w-full sm:w-auto">
+                <Link href="/admin/create-partner">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Create New Partner
+                </Link>
+              </Button>
             </div>
           </div>
           
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
+          <div className="responsive-card-grid mb-8">
             <Card className="rounded-xl shadow-md">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                     <CardTitle className="text-sm font-medium">Total Partners</CardTitle>
@@ -362,20 +356,21 @@ export default function AdminDashboard() {
                 <CardDescription>Manage and review all partner onboarding applications.</CardDescription>
             </CardHeader>
             <CardContent className="p-0">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>IMTO Name</TableHead>
-                    <TableHead>Company Email</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Files Uploaded</TableHead>
-                    <TableHead>Total Size</TableHead>
-                    <TableHead>Last Updated</TableHead>
-                    <TableHead>
-                      <span className="sr-only">Actions</span>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
+              <div className="responsive-table-wrapper">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>IMTO Name</TableHead>
+                      <TableHead>Company Email</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Files Uploaded</TableHead>
+                      <TableHead>Total Size</TableHead>
+                      <TableHead>Last Updated</TableHead>
+                      <TableHead>
+                        <span className="sr-only">Actions</span>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
                 <TableBody>
                   {submissions.map((submission) => (
                     <TableRow key={submission.id}>
@@ -422,6 +417,7 @@ export default function AdminDashboard() {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
         </div>

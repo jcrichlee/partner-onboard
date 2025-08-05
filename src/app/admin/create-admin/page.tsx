@@ -207,7 +207,7 @@ export default function CreateAdminPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
+    <div className="responsive-container min-h-screen flex items-center justify-center">
       <Card className="w-full max-w-lg mx-auto rounded-xl shadow-md h-full max-h-[96vh] flex flex-col">
          <CardHeader>
           <div className="flex items-center justify-between">
@@ -229,13 +229,13 @@ export default function CreateAdminPage() {
                   <path d="M50 10L86.6 30V70L50 90L13.4 70V30L50 10Z" fill="white" />
                   <path d="M50 20L77.94 35V65L50 80L22.06 65V35L50 20Z" fill="#A6192E" />
                 </svg>
-                <CardTitle className="text-xl font-bold font-headline">
+                <CardTitle className="text-lg sm:text-xl font-bold font-headline">
                   OnboardLink
                 </CardTitle>
               </Link>
               <div className="w-8"></div>
            </div>
-          <CardDescription className="text-center pt-4">
+          <CardDescription className="text-center pt-4 text-sm sm:text-base">
             Create a new Admin account and set their permissions.
           </CardDescription>
         </CardHeader>
@@ -288,7 +288,7 @@ export default function CreateAdminPage() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="text-base font-medium">Accessible Onboarding Stages</Label>
-                  <div className="flex flex-wrap gap-2 pt-2">
+                  <div className="responsive-button-group pt-2">
                      <Button
                         type="button"
                         variant={selectAllStages ? 'default' : 'outline'}
@@ -320,7 +320,7 @@ export default function CreateAdminPage() {
                           <Label className="font-semibold text-base">
                               {stageOptions.find(o => o.value === stageKey)?.label} Permissions
                           </Label>
-                          <div className="flex flex-wrap gap-2">
+                          <div className="responsive-button-group">
                             <Button
                                 type="button"
                                 variant={allSelected ? 'default' : 'outline'}

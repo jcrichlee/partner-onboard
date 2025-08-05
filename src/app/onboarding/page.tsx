@@ -38,7 +38,7 @@ export default function OnboardingPage() {
   if (isLoading && !currentStep) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto px-4 py-8">
+        <div className="responsive-container py-8">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Progress sidebar skeleton */}
             <div className="lg:col-span-1">
