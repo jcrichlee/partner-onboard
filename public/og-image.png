@@ -1,0 +1,60 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#0F172A"/>
+  
+  <!-- Gradient overlay -->
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E40AF;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:0.6" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#gradient)"/>
+  
+  <!-- Sterling Bank Logo Area -->
+  <rect x="80" y="80" width="60" height="60" rx="12" fill="#10B981"/>
+  <text x="110" y="120" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="white" text-anchor="middle">SB</text>
+  
+  <!-- Main Title -->
+  <text x="80" y="200" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white">
+    OnboardLink
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="80" y="250" font-family="Arial, sans-serif" font-size="24" fill="#CBD5E1">
+    Sterling Bank IMTO Onboarding Portal
+  </text>
+  
+  <!-- Description -->
+  <text x="80" y="320" font-family="Arial, sans-serif" font-size="18" fill="#94A3B8">
+    Streamlined onboarding for International Money Transfer Operators
+  </text>
+  <text x="80" y="350" font-family="Arial, sans-serif" font-size="18" fill="#94A3B8">
+    Complete compliance documentation and get started quickly
+  </text>
+  
+  <!-- Features -->
+  <g transform="translate(80, 420)">
+    <!-- Feature 1 -->
+    <circle cx="8" cy="8" r="4" fill="#10B981"/>
+    <text x="24" y="13" font-family="Arial, sans-serif" font-size="16" fill="#E2E8F0">Digital Document Upload</text>
+    
+    <!-- Feature 2 -->
+    <circle cx="8" cy="38" r="4" fill="#10B981"/>
+    <text x="24" y="43" font-family="Arial, sans-serif" font-size="16" fill="#E2E8F0">Compliance Verification</text>
+    
+    <!-- Feature 3 -->
+    <circle cx="8" cy="68" r="4" fill="#10B981"/>
+    <text x="24" y="73" font-family="Arial, sans-serif" font-size="16" fill="#E2E8F0">Real-time Status Tracking</text>
+  </g>
+  
+  <!-- Decorative elements -->
+  <circle cx="950" cy="150" r="80" fill="#1E40AF" opacity="0.3"/>
+  <circle cx="1050" cy="250" r="60" fill="#7C3AED" opacity="0.4"/>
+  <circle cx="1100" cy="400" r="40" fill="#10B981" opacity="0.5"/>
+  
+  <!-- Bottom branding -->
+  <text x="80" y="580" font-family="Arial, sans-serif" font-size="14" fill="#64748B">
+    Powered by Sterling Bank Nigeria
+  </text>
+</svg>

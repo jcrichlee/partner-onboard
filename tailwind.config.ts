@@ -21,8 +21,8 @@ export default {
         'md': '0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)',
       },
       fontFamily: {
-        body: ['Poppins', 'sans-serif'],
-        headline: ['Poppins', 'sans-serif'],
+        body: ['Satoshi', 'sans-serif'],
+        headline: ['Satoshi', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {

@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /api/
+
+# Allow public pages
+Allow: /login
+Allow: /onboarding
+Allow: /confirmation
+
+# Sitemap
+Sitemap: https://imto-onboarding.netlify.app/sitemap.xml
+
+# Crawl delay
+Crawl-delay: 1

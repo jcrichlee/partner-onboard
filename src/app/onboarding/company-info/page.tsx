@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { CompanyInfoForm } from "@/components/company-info-form";
 import {
   Card,
@@ -5,6 +6,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+export const metadata: Metadata = {
+  title: "Company Information | OnboardLink - IMTO Onboarding",
+  description: "Step 1 of IMTO onboarding: Provide your company's incorporation details and official documents. Secure and automated progress saving.",
+  openGraph: {
+    title: "Company Information | OnboardLink - IMTO Onboarding",
+    description: "Step 1 of IMTO onboarding: Provide your company's incorporation details and official documents.",
+  },
+  robots: {
+    index: false,
+    follow: true,
+  },
+};
 
 export default function CompanyInfoPage() {
   return (
