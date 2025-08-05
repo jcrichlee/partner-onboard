@@ -5,7 +5,8 @@ service cloud.firestore {
 
     // Helper function to check for admin roles
     function isAdmin() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'superadmin'];
+      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'superadmin'];
     }
 
     // Rules for the 'users' collection

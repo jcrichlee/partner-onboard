@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -50,26 +50,36 @@ export default function UserManagementPage() {
   const { toast } = useToast();
   const { userProfile, loading: authLoading } = useAuth();
 
-  useEffect(() => {
+  const fetchUsers = useCallback(async () => {
     if (authLoading) return;
-    if (!userProfile) {
+    
+    // If user is not authenticated, redirect to login
+    if (!userProfile && !authLoading) {
       router.push('/login');
       return;
     }
 
-    if (!userProfile.canManageUsers) {
+    // If userProfile exists but doesn't have permission, redirect to admin
+    if (userProfile && !userProfile.canManageUsers) {
         toast({ variant: 'destructive', title: 'Permission Denied' });
         router.push('/admin');
-    } else {
-        const fetchUsers = async () => {
-            const allUsers = await getAllUsers();
-            setUsers(allUsers);
-            setLoading(false);
-        };
-        fetchUsers();
+        return;
     }
     
+    try {
+      const allUsers = await getAllUsers();
+      setUsers(allUsers);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+      toast({ variant: 'destructive', title: 'Error', description: 'Failed to load users. This may be due to insufficient permissions.' });
+    } finally {
+      setLoading(false);
+    }
   }, [userProfile, authLoading, router, toast]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleToggleDisable = async (user: UserProfile) => {
     try {

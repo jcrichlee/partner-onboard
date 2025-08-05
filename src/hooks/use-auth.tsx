@@ -25,11 +25,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
       if (user) {
-        const userDocRef = doc(db, 'users', user.uid);
-        const userDoc = await getDoc(userDocRef);
-        if (userDoc.exists()) {
-          setUserProfile({ id: user.uid, ...userDoc.data() } as UserProfile);
-        } else {
+        try {
+          const userDocRef = doc(db, 'users', user.uid);
+          const userDoc = await getDoc(userDocRef);
+          if (userDoc.exists()) {
+            setUserProfile({ id: user.uid, ...userDoc.data() } as UserProfile);
+          } else {
+            setUserProfile(null);
+          }
+        } catch (error) {
+          console.error('Error fetching user profile:', error);
+          // If we can't read the user document due to permissions, set userProfile to null
+          // but still mark loading as false so the app doesn't hang
           setUserProfile(null);
         }
       } else {
