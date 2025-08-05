@@ -13,7 +13,7 @@ import { CheckCircle, Edit, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from 'next/navigation';
 import { SubmissionProvider } from "@/hooks/use-submission-provider";
-import { useSubmission } from "@/hooks/use-submission";
+import { useSubmission } from "@/hooks/use-submission-provider";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const sectionRequirements = [

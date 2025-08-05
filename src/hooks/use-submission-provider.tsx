@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { SubmissionContext, SubmissionContextType } from './use-submission';
+import { SubmissionContext, SubmissionContextType, useSubmission } from './use-submission';
 import { OnboardingSubmission, getOrCreateSubmissionForUser, updateSubmission, OnboardingFile } from '@/lib/firestore';
 import { useToast } from './use-toast';
 import { useAuth } from './use-auth';
@@ -101,3 +101,5 @@ export function SubmissionProvider({ children }: { children: React.ReactNode }) 
     </SubmissionContext.Provider>
   );
 }
+
+export { useSubmission };

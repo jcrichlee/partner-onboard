@@ -22,7 +22,7 @@ import Link from "next/link";
 
 import { Progress } from "@/components/ui/progress";
 import { SubmissionProvider } from "@/hooks/use-submission-provider";
-import { useSubmission } from "@/hooks/use-submission";
+import { useSubmission } from "@/hooks/use-submission-provider";
 
 const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {

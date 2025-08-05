@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { FileUpload } from "@/components/file-upload";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { useSubmission } from "@/hooks/use-submission";
+import { useSubmission } from "@/hooks/use-submission-client";
 import { OnboardingFile } from "@/lib/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
