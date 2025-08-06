@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { DynamicOnboardingForm } from "@/components/dynamic-onboarding-form";
-import { OnboardingProgress } from "@/components/onboarding-progress";
 import { useOnboardingManager } from "@/hooks/use-onboarding-manager";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -107,14 +106,9 @@ export default function OnboardingPage() {
     return (
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Progress sidebar */}
-            <div className="lg:col-span-1">
-              <OnboardingProgress />
-            </div>
-
+          <div className="max-w-4xl mx-auto">
             {/* Completion message */}
-            <div className="lg:col-span-3">
+            <div>
               <Card>
                 <CardContent className="p-8 text-center space-y-6">
                   <div className="space-y-4">
@@ -184,16 +178,9 @@ export default function OnboardingPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Progress sidebar */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-8">
-              <OnboardingProgress />
-            </div>
-          </div>
-
+        <div className="max-w-4xl mx-auto">
           {/* Main content area */}
-          <div className="lg:col-span-3">
+          <div>
             {currentStep ? (
               <DynamicOnboardingForm 
                 step={currentStep}

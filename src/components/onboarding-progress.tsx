@@ -1,7 +1,6 @@
 "use client";
 
-import { Button } from "./ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "./ui/card";
 import { Progress } from "./ui/progress";
 import { Badge } from "./ui/badge";
 import { CheckCircle, Circle, Clock, AlertCircle, ChevronRight } from "lucide-react";
@@ -121,12 +120,12 @@ export function OnboardingProgress({
   return (
     <Card className={className}>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>Onboarding Progress</span>
-          <Badge variant="outline" className="text-sm">
+        <div className="flex items-center gap-3">
+          <h3 className="text-lg font-semibold leading-none tracking-tight">Onboarding Progress</h3>
+          <Badge variant="outline" className="text-xs shrink-0">
             {progress.completedSteps} of {progress.totalSteps} completed
           </Badge>
-        </CardTitle>
+        </div>
         <CardDescription>
           Complete all steps to finish your partner onboarding process.
         </CardDescription>
@@ -238,28 +237,7 @@ export function OnboardingProgress({
           </div>
         </div>
 
-        {/* Action buttons */}
-        {showNavigation && progress.status !== 'completed' && (
-          <div className="pt-4 border-t">
-            <Button 
-              onClick={() => {
-                if (currentStep) {
-                  handleStepClick(currentStep);
-                }
-              }}
-              disabled={isLoading}
-              className="w-full"
-            >
-              {isLoading ? (
-                "Loading..."
-              ) : progress.currentStepIndex === 0 ? (
-                "Start Onboarding"
-              ) : (
-                `Continue Step ${progress.currentStepIndex + 1}`
-              )}
-            </Button>
-          </div>
-        )}
+
 
         {/* Completion message */}
         {progress.status === 'completed' && (

@@ -23,7 +23,7 @@ type FormData = z.infer<typeof CompanyInfoSchema>;
 
 export function CompanyInfoForm() {
   const router = useRouter();
-  const { submission, updateSubmissionData, loading } = useSubmission();
+  const { submission, updateSubmissionData, refreshSubmission, loading } = useSubmission();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
 
@@ -51,15 +51,29 @@ export function CompanyInfoForm() {
 
     try {
       // Files are handled by the FileUpload components
+      const stepData = {
+        companyName: values.companyName,
+        businessDescription: values.businessDescription,
+        companyUrl: values.companyUrl,
+      };
 
       const updateData = {
         partnerName: values.companyName,
         companyName: values.companyName,
         businessDescription: values.businessDescription,
         companyUrl: values.companyUrl,
+        // Update the steps object for progress tracking
+        steps: {
+          ...submission.steps,
+          'company-info': stepData
+        },
+        currentStep: 'company-info',
+        lastUpdated: new Date().toISOString()
       };
 
       await updateSubmissionData(updateData);
+      // Refresh submission data to update progress component
+      await refreshSubmission();
       return true;
 
     } catch(e) {
@@ -79,6 +93,11 @@ export function CompanyInfoForm() {
       setIsSaving(true);
       const success = await handleSave(form.getValues());
       if (success) {
+        // Update current step to compliance before navigation
+        await updateSubmissionData({
+          currentStep: 'compliance',
+          lastUpdated: new Date().toISOString()
+        });
         router.push("/onboarding/compliance");
       } else {
         setIsSaving(false);

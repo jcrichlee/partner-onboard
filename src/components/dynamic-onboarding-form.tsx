@@ -49,7 +49,7 @@ function FormContent({
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const { submission, updateSubmission } = useSubmission();
+  const { submission, updateSubmission, refreshSubmission } = useSubmission();
 
   // Get existing data for this step from submission
   const existingData = submission?.steps?.[stepId] || {};
@@ -112,6 +112,9 @@ function FormContent({
         lastUpdated: new Date().toISOString()
       });
 
+      // Refresh submission data to update progress component
+      await refreshSubmission();
+
       toast({
         title: "Progress Saved",
         description: `${currentStep.title} has been saved successfully.`,
@@ -122,6 +125,11 @@ function FormContent({
       if (nextStepIndex < totalSteps) {
         const nextStep = ONBOARDING_STEPS[nextStepIndex];
         if (nextStep) {
+          // Update current step before navigation
+          await updateSubmission({
+            currentStep: nextStep.id,
+            lastUpdated: new Date().toISOString()
+          });
           router.push(nextStep.route);
         }
       } else {

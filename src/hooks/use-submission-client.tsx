@@ -81,14 +81,24 @@ export function SubmissionProvider({ children }: { children: ReactNode }) {
     if (!user || !submission) return;
 
     try {
-      const submissionRef = doc(db, "onboardingSubmissions", submission.id);
-      await updateDoc(submissionRef, {
+      const updatedData = {
         ...data,
         lastUpdated: new Date().toISOString(),
-      });
+      };
       
-      // Update local state optimistically
-      setSubmission(prev => prev ? { ...prev, ...data, lastUpdated: new Date().toISOString() } : null);
+      const submissionRef = doc(db, "onboardingSubmissions", submission.id);
+      await updateDoc(submissionRef, updatedData);
+      
+      // Update local state optimistically with proper merging
+      setSubmission(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          ...updatedData,
+          // Ensure steps are properly merged
+          steps: data.steps ? { ...(prev.steps || {}), ...data.steps } : (prev.steps || {}),
+        };
+      });
       
       toast.success("Information saved successfully");
     } catch (error) {

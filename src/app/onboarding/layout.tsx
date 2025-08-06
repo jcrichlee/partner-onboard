@@ -32,10 +32,10 @@ export default function OnboardingLayout({
           <div className="container">
             {/* Responsive layout: stacked on mobile, side-by-side on desktop */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-              {/* Progress component - compact on desktop, full on mobile */}
+              {/* Progress component - full view to show all steps */}
               <div className="lg:col-span-4 xl:col-span-3">
                 <div className="lg:sticky lg:top-24">
-                  <OnboardingProgress compact className="lg:max-w-sm" />
+                  <OnboardingProgress className="lg:max-w-sm" />
                 </div>
               </div>
               

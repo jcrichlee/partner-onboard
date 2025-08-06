@@ -361,8 +361,10 @@ export function useOnboardingManager() {
   useEffect(() => {
     if (submission) {
       setError(null);
+      // Force recalculation of progress when submission changes
+      // This ensures the progress component updates when step data is saved
     }
-  }, [submission]);
+  }, [submission, submission?.steps, submission?.currentStep]);
 
   return {
     // State
