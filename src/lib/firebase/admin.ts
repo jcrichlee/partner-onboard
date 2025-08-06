@@ -25,12 +25,24 @@ if (getApps().length === 0) {
         storageBucket: "imto-onboarding-portal.firebasestorage.app"
       });
     } else {
-      // Fallback to application default credentials for development
-      console.warn('No service account key found, using application default credentials');
-      adminApp = initializeApp({
-        projectId: "imto-onboarding-portal",
-        storageBucket: "imto-onboarding-portal.firebasestorage.app"
-      });
+      // Use local service account file as fallback
+      try {
+        const path = require('path');
+        const serviceAccountPath = path.join(process.cwd(), 'imto-onboarding-portal-service-account.json');
+        adminApp = initializeApp({
+          credential: cert(serviceAccountPath),
+          projectId: "imto-onboarding-portal",
+          storageBucket: "imto-onboarding-portal.firebasestorage.app"
+        });
+        console.log('Using local service account file for Firebase Admin SDK');
+      } catch (localError) {
+        // Final fallback to application default credentials for development
+        console.warn('No service account key found, using application default credentials');
+        adminApp = initializeApp({
+          projectId: "imto-onboarding-portal",
+          storageBucket: "imto-onboarding-portal.firebasestorage.app"
+        });
+      }
     }
   } catch (error) {
     console.error('Failed to initialize Firebase Admin SDK:', error);

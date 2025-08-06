@@ -44,4 +44,6 @@ next-env.d.ts
 firebase-debug.log
 firestore-debug.log
 *-service-account.json
+
+# Firebase service account (contains sensitive credentials)
 imto-onboarding-portal-service-account.json
