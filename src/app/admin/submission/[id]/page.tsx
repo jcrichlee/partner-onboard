@@ -231,10 +231,10 @@ export default function SubmissionDetailPage({ params }: { params: Promise<{ id:
          // Check if all sections are now approved
         const allApproved = allSections.every(sec => newSectionStatus[sec] === 'approved');
         if (allApproved) {
-            finalStatus = 'Approved';
+            finalStatus = 'approved';
         }
     } else {
-        finalStatus = 'Requires Attention';
+        finalStatus = 'requires-attention';
     }
     
     const commentText = comments[category];

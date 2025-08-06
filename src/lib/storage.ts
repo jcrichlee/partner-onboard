@@ -1,6 +1,6 @@
 
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
-import { auth, storage } from "./firebase";
+import { auth, storage } from "./firebase/client";
 import { OnboardingFile, OnboardingSubmission } from "./firestore";
 
 export async function uploadUserFile(

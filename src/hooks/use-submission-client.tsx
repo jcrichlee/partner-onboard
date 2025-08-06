@@ -1,11 +1,11 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import { doc, getDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { db, storage } from "../lib/firebase/client";
-import { type OnboardingSubmission, type FileUpload } from "../lib/schemas";
-import { type OnboardingFile } from "../lib/schemas/onboarding-steps";
+import { type OnboardingSubmission, type OnboardingFile } from "../lib/firestore";
+import { type FileUpload } from "../lib/schemas";
 import { useAuth } from "./use-auth-client";
 import { toast } from "sonner";
 import { generateId } from "../lib/utils";
@@ -13,10 +13,10 @@ import { generateId } from "../lib/utils";
 interface SubmissionContextType {
   submission: OnboardingSubmission | null;
   loading: boolean;
-  updateSubmission: (data: Partial<OnboardingSubmission>) => Promise<void>;
-  updateSubmissionData: (data: Partial<OnboardingSubmission>) => Promise<void>;
-  addFile: (file: File, category: string, fieldId: string, storagePath?: string) => Promise<void>;
-  removeFile: (fileToRemove: FileUpload | OnboardingFile) => Promise<void>;
+  updateSubmission: (_data: Partial<OnboardingSubmission>) => Promise<void>;
+  updateSubmissionData: (_data: Partial<OnboardingSubmission>) => Promise<void>;
+  addFile: (_file: File, _category: string, _fieldId: string, _storagePath?: string) => Promise<void>;
+  removeFile: (_fileToRemove: FileUpload | OnboardingFile) => Promise<void>;
   refreshSubmission: () => Promise<void>;
 }
 
@@ -34,83 +34,43 @@ export function SubmissionProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Set up real-time listener for the user's submission
-    const submissionRef = doc(db, "onboardingSubmissions", user.uid);
-    
-    const unsubscribe = onSnapshot(
-      submissionRef,
-      (doc) => {
-        if (doc.exists()) {
-          const data = doc.data();
-          if (data) {
-            setSubmission({
-              id: doc.id,
-              partnerId: data.partnerId,
-              partnerName: data.partnerName,
-              partnerEmail: data.partnerEmail,
-              status: data.status,
-              lastUpdated: data.lastUpdated,
-              createdAt: data.createdAt,
-              timeline: data.timeline || [],
-              files: data.files || [],
-              chat: data.chat || [],
-              sectionStatus: data.sectionStatus || {},
-              steps: data.steps || {},
-              currentStep: data.currentStep,
-              completedAt: data.completedAt,
-              companyName: data.companyName,
-              businessDescription: data.businessDescription,
-              companyUrl: data.companyUrl,
-              pepDisclosure: data.pepDisclosure,
-              pepDetails: data.pepDetails,
-              hasComplianceOfficer: data.hasComplianceOfficer,
-              hasSecurityAudits: data.hasSecurityAudits,
-            });
-          }
+    // Load submission data without real-time listener to avoid permission issues
+    const loadSubmission = async () => {
+      try {
+        setLoading(true);
+        
+        // First try to get existing submission using the query approach
+        const { getSubmissionForUser } = await import('../lib/firestore');
+        const existingSubmission = await getSubmissionForUser(user.uid);
+        
+        if (existingSubmission) {
+          setSubmission(existingSubmission);
         } else {
           // Create new submission if it doesn't exist
-          createNewSubmission();
+          await createNewSubmission();
         }
-        setLoading(false);
-      },
-      (error) => {
-        console.error("Error listening to submission:", error);
-        toast.error("Failed to load submission data");
+      } catch (error) {
+        console.error("Error loading submission:", error);
+        // Don't show error toast for permission issues during initial load
+        if (!(error instanceof Error) || !error.message?.includes('Missing or insufficient permissions')) {
+          toast.error("Failed to load submission data");
+        }
+      } finally {
         setLoading(false);
       }
-    );
+    };
 
-    return () => unsubscribe();
+    loadSubmission();
   }, [user]);
 
   const createNewSubmission = async () => {
     if (!user) return;
 
     try {
-      const newSubmission = {
-        partnerId: user.uid,
-        partnerName: user.displayName || user.email || "Unknown",
-        partnerEmail: user.email,
-        status: "draft" as const,
-        lastUpdated: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        timeline: [
-          {
-            icon: "🚀",
-            title: "Onboarding Started",
-            actor: "System",
-            date: new Date().toISOString(),
-            content: "Partner onboarding process has been initiated",
-            category: "system",
-          },
-        ],
-        files: [],
-        chat: [],
-        sectionStatus: {},
-      };
-
-      const submissionRef = doc(db, "onboardingSubmissions", user.uid);
-      await updateDoc(submissionRef, newSubmission);
+      // Use the proper function from firestore.ts to create submission
+      const { getOrCreateSubmissionForUser } = await import('../lib/firestore');
+      const newSubmission = await getOrCreateSubmissionForUser();
+      setSubmission(newSubmission);
     } catch (error) {
       console.error("Error creating submission:", error);
       toast.error("Failed to create submission");
@@ -121,11 +81,14 @@ export function SubmissionProvider({ children }: { children: ReactNode }) {
     if (!user || !submission) return;
 
     try {
-      const submissionRef = doc(db, "onboardingSubmissions", user.uid);
+      const submissionRef = doc(db, "onboardingSubmissions", submission.id);
       await updateDoc(submissionRef, {
         ...data,
         lastUpdated: new Date().toISOString(),
       });
+      
+      // Update local state optimistically
+      setSubmission(prev => prev ? { ...prev, ...data, lastUpdated: new Date().toISOString() } : null);
       
       toast.success("Information saved successfully");
     } catch (error) {
@@ -168,7 +131,7 @@ export function SubmissionProvider({ children }: { children: ReactNode }) {
       };
 
       // Update Firestore with new file
-      const submissionRef = doc(db, "onboardingSubmissions", user.uid);
+      const submissionRef = doc(db, "onboardingSubmissions", submission.id);
       await updateDoc(submissionRef, {
         files: arrayUnion(newFile),
         lastUpdated: new Date().toISOString(),
@@ -199,7 +162,7 @@ export function SubmissionProvider({ children }: { children: ReactNode }) {
       await deleteObject(storageRef);
 
       // Update Firestore
-      const submissionRef = doc(db, "onboardingSubmissions", user.uid);
+      const submissionRef = doc(db, "onboardingSubmissions", submission.id);
       await updateDoc(submissionRef, {
         files: arrayRemove(fileToRemove),
         lastUpdated: new Date().toISOString(),
@@ -226,15 +189,12 @@ export function SubmissionProvider({ children }: { children: ReactNode }) {
 
     try {
       setLoading(true);
-      const submissionRef = doc(db, "onboardingSubmissions", user.uid);
-      const submissionDoc = await getDoc(submissionRef);
+      // Use the proper function from firestore.ts to get submission
+      const { getSubmissionForUser } = await import('../lib/firestore');
+      const refreshedSubmission = await getSubmissionForUser(user.uid);
       
-      if (submissionDoc.exists()) {
-        const data = submissionDoc.data();
-        setSubmission({
-          id: submissionDoc.id,
-          ...data,
-        } as OnboardingSubmission);
+      if (refreshedSubmission) {
+        setSubmission(refreshedSubmission);
       }
     } catch (error) {
       console.error("Error refreshing submission:", error);

@@ -196,7 +196,7 @@ function PartnerDashboardView() {
             })}
           </CardContent>
           <CardFooter className="pt-6">
-                {(submission.status === 'In Progress' || submission.status === 'Requires Attention') && (
+                {(submission.status === 'in-progress' || submission.status === 'requires-attention') && (
                     <Button asChild size="lg" className="w-full sm:w-auto rounded-xl shadow-md">
                         <Link href={getResumeLink()}>
                             Resume Application
@@ -204,7 +204,7 @@ function PartnerDashboardView() {
                         </Link>
                     </Button>
                 )}
-                 {(submission.status === 'Submitted' || submission.status === 'Approved') && (
+                 {(submission.status === 'submitted' || submission.status === 'approved') && (
                     <Button variant="secondary" size="lg" asChild className="w-full sm:w-auto rounded-xl shadow-md">
                         <Link href="/confirmation">
                             Review Full Application

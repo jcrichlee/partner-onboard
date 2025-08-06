@@ -151,7 +151,7 @@ export default function OnboardingPage() {
                     </h3>
                     <ul className="text-sm text-blue-800 space-y-1 text-left">
                       <li>• Our compliance team will review your submission</li>
-                      <li>• You'll receive updates via email</li>
+                      <li>• You&apos;ll receive updates via email</li>
                       <li>• The review process typically takes 3-5 business days</li>
                       <li>• You may be contacted for additional information if needed</li>
                     </ul>
@@ -196,7 +196,7 @@ export default function OnboardingPage() {
           <div className="lg:col-span-3">
             {currentStep ? (
               <DynamicOnboardingForm 
-                stepId={currentStep.id}
+                step={currentStep}
               />
             ) : (
               <Card>

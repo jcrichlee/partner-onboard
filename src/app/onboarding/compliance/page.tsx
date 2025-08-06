@@ -14,7 +14,7 @@ export default function CompliancePage() {
           Step 2: Ownership &amp; Compliance
         </CardTitle>
         <CardDescription>
-          Please provide your company's compliance documents and disclose any
+          Please provide your company&apos;s compliance documents and disclose any
           Politically Exposed Persons (PEPs). Your progress is saved automatically.
         </CardDescription>
       </CardHeader>

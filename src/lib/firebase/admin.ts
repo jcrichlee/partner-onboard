@@ -8,25 +8,38 @@ import { getStorage } from "firebase-admin/storage";
 let adminApp: App;
 
 if (getApps().length === 0) {
-  // In production, use service account key from environment
-  // In development, you can use the service account file
-  let serviceAccount;
-  
-  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
-  } else {
-    // Fallback for development - you should add your service account file
-    serviceAccount = {
+  try {
+    // Try to use service account key from environment first
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
+      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+      adminApp = initializeApp({
+        credential: cert(serviceAccount),
+        projectId: "imto-onboarding-portal",
+        storageBucket: "imto-onboarding-portal.firebasestorage.app"
+      });
+    } else if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY_PATH) {
+      // Use service account key file path
+      adminApp = initializeApp({
+        credential: cert(process.env.FIREBASE_SERVICE_ACCOUNT_KEY_PATH),
+        projectId: "imto-onboarding-portal",
+        storageBucket: "imto-onboarding-portal.firebasestorage.app"
+      });
+    } else {
+      // Fallback to application default credentials for development
+      console.warn('No service account key found, using application default credentials');
+      adminApp = initializeApp({
+        projectId: "imto-onboarding-portal",
+        storageBucket: "imto-onboarding-portal.firebasestorage.app"
+      });
+    }
+  } catch (error) {
+    console.error('Failed to initialize Firebase Admin SDK:', error);
+    // Initialize with minimal config for development
+    adminApp = initializeApp({
       projectId: "imto-onboarding-portal",
-      // Add other required fields or use application default credentials
-    };
+      storageBucket: "imto-onboarding-portal.firebasestorage.app"
+    });
   }
-
-  adminApp = initializeApp({
-    credential: cert(serviceAccount),
-    projectId: "imto-onboarding-portal",
-    storageBucket: "imto-onboarding-portal.firebasestorage.app"
-  });
 } else {
   adminApp = getApps()[0] as App;
 }

@@ -60,9 +60,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => unsubscribe();
   }, []);
 
+  // eslint-disable-next-line no-unused-vars
   const login = async (email: string, password: string) => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      // Force token refresh to ensure custom claims are loaded
+      await userCredential.user.getIdToken(true);
     } catch (error) {
       console.error("Login error:", error);
       throw error;

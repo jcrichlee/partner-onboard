@@ -14,9 +14,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, ArrowLeft, RefreshCw } from 'lucide-react';
@@ -30,6 +29,7 @@ import {
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { createAdmin } from '@/lib/actions/auth';
 
 type StagePermission = 'view' | 'comment';
 type StagePermissionsMap = Record<string, StagePermission[]>;
@@ -139,15 +139,8 @@ export default function CreateAdminPage() {
   const handleCreateAdmin = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    // Create a temporary, secondary Firebase app instance.
-    const secondaryApp = initializeApp(auth.app.options, `secondary-app-${Date.now()}`);
-    const secondaryAuth = getAuth(secondaryApp);
-
     try {
-      const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
-      const user = userCredential.user;
-
-      let finalPermissions = { ...stagePermissions };
+      const finalPermissions = { ...stagePermissions };
       if (selectAllStages) {
           stageOptions.forEach(stage => {
               if (!finalPermissions[stage.value]) {
@@ -156,37 +149,38 @@ export default function CreateAdminPage() {
           })
       }
 
-
-      await setDoc(doc(db, "users", user.uid), {
-        email: user.email,
-        role: role,
-        stagePermissions: finalPermissions,
-        canManageUsers: canManageUsers,
-      });
+      const result = await createAdmin(email, password, role, finalPermissions, canManageUsers);
       
-      try {
-        const loginUrl = window.location.origin + '/login';
-        const credentialsText = `Hi Admin,\n\nHere's your login credential for the onboard portal\n\nemail address - ${email}\npassword - ${password}\nlogin url - ${loginUrl}`;
-        await navigator.clipboard.writeText(credentialsText);
+      if (result.success) {
+        try {
+          const loginUrl = window.location.origin + '/login';
+          const credentialsText = `Hi Admin,\n\nHere's your login credential for the onboard portal\n\nemail address - ${email}\npassword - ${password}\nlogin url - ${loginUrl}`;
+          await navigator.clipboard.writeText(credentialsText);
+          toast({
+            title: 'Admin Created & Copied',
+            description: 'Admin credentials have been copied to your clipboard.',
+          });
+        } catch (copyError) {
+          console.error('Failed to copy credentials:', copyError);
+          toast({
+            title: 'Admin Created',
+            description: 'Admin account was created, but credentials could not be copied.',
+          });
+        }
+        
+        router.push('/admin');
+      } else {
         toast({
-          title: 'Admin Created & Copied',
-          description: 'Admin credentials have been copied to your clipboard.',
-        });
-      } catch (copyError) {
-        console.error('Failed to copy credentials:', copyError);
-        toast({
-          title: 'Admin Created',
-          description: 'Admin account was created, but credentials could not be copied.',
+          variant: 'destructive',
+          title: 'Admin Creation Failed',
+          description: result.message || 'Could not create admin account. Please try again.',
         });
       }
-
-      router.push('/admin');
     } catch (error) {
       toast({
         variant: 'destructive',
         title: 'Admin Creation Failed',
-        description:
-          'Could not create admin account. Please try again.',
+        description: 'Could not create admin account. Please try again.',
       });
       console.error('Admin creation error:', error);
     }

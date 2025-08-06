@@ -30,10 +30,20 @@ export default function OnboardingLayout({
         </header>
         <main className="flex-1 py-8 md:py-12">
           <div className="container">
-            <div className="mb-12 flex justify-center">
-              <OnboardingProgress />
+            {/* Responsive layout: stacked on mobile, side-by-side on desktop */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              {/* Progress component - compact on desktop, full on mobile */}
+              <div className="lg:col-span-4 xl:col-span-3">
+                <div className="lg:sticky lg:top-24">
+                  <OnboardingProgress compact className="lg:max-w-sm" />
+                </div>
+              </div>
+              
+              {/* Form content */}
+              <div className="lg:col-span-8 xl:col-span-9">
+                {children}
+              </div>
             </div>
-            {children}
           </div>
         </main>
       </div>

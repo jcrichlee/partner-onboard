@@ -3,6 +3,21 @@ import { collection, doc, getDoc, getDocs, query, where, addDoc, updateDoc, Time
 import { db } from "./firebase/client";
 import { auth } from "./firebase/client";
 
+// Helper function to safely convert timestamps
+function safeTimestampToISO(timestamp: any): string {
+  if (!timestamp) return new Date().toISOString();
+  if (timestamp instanceof Timestamp) {
+    return timestamp.toDate().toISOString();
+  }
+  if (typeof timestamp === 'string') {
+    return timestamp;
+  }
+  if (timestamp.toDate && typeof timestamp.toDate === 'function') {
+    return timestamp.toDate().toISOString();
+  }
+  return new Date().toISOString();
+}
+
 export type OnboardingFile = {
     id?: string; // Optional for backward compatibility
     name: string;
@@ -41,13 +56,16 @@ export type OnboardingSubmission = {
     partnerId: string;
     partnerName: string; // This could be company name
     partnerEmail?: string; // This will be added
-    status: 'Not Started' | 'In Progress' | 'Submitted' | 'Requires Attention' | 'Approved' | 'Rejected';
+    status: 'draft' | 'in-progress' | 'completed' | 'submitted' | 'under-review' | 'requires-attention' | 'approved' | 'rejected';
     lastUpdated: string;
     createdAt: string;
+    completedAt?: string;
     timeline: TimelineEvent[];
     files: OnboardingFile[];
     chat?: ChatMessage[];
     sectionStatus?: Record<string, SectionStatus>;
+    steps?: Record<string, any>;
+    currentStep?: string;
 
     // Step 1: Company Information
     companyName?: string;
@@ -120,7 +138,7 @@ export async function getDashboardMetrics(): Promise<DashboardMetrics> {
     let totalFileSize = 0;
     submissionsSnapshot.forEach(doc => {
         const submission = doc.data() as OnboardingSubmission;
-        if (submission.status === 'Approved') {
+        if (submission.status === 'approved') {
             completedOnboards++;
         }
         if (submission.files && Array.isArray(submission.files)) {
@@ -152,10 +170,10 @@ export async function getSubmissions(): Promise<OnboardingSubmission[]> {
             id: doc.id,
             ...data,
             partnerEmail: user?.email || 'N/A',
-            lastUpdated: (data.lastUpdated as unknown as Timestamp).toDate().toISOString(),
-            createdAt: (data.createdAt as unknown as Timestamp).toDate().toISOString(),
-            timeline: (data.timeline || []).map((t: any) => ({ ...t, date: (t.date instanceof Timestamp ? t.date.toDate().toISOString() : new Date(t.date).toISOString()) })),
-            chat: (data.chat || []).map((c: any) => ({...c, time: (c.time instanceof Timestamp ? c.time.toDate().toISOString() : new Date(c.time).toISOString()) })),
+            lastUpdated: safeTimestampToISO(data.lastUpdated),
+            createdAt: safeTimestampToISO(data.createdAt),
+            timeline: (data.timeline || []).map((t: any) => ({ ...t, date: safeTimestampToISO(t.date) })),
+            chat: (data.chat || []).map((c: any) => ({...c, time: safeTimestampToISO(c.time) })),
         }
     });
 }
@@ -176,10 +194,10 @@ export async function getSubmissionForUser(userId: string): Promise<OnboardingSu
     return {
         id: docSnapshot.id,
         ...data,
-        lastUpdated: (data.lastUpdated as Timestamp).toDate().toISOString(),
-        createdAt: (data.createdAt as Timestamp).toDate().toISOString(),
-        timeline: (data.timeline || []).map((t: any) => ({ ...t, date: (t.date instanceof Timestamp ? t.date.toDate().toISOString() : new Date(t.date).toISOString()) })),
-        chat: (data.chat || []).map((c: any) => ({...c, time: (c.time instanceof Timestamp ? c.time.toDate().toISOString() : new Date(c.time).toISOString()) })),
+        lastUpdated: safeTimestampToISO(data.lastUpdated),
+        createdAt: safeTimestampToISO(data.createdAt),
+        timeline: (data.timeline || []).map((t: any) => ({ ...t, date: safeTimestampToISO(t.date) })),
+        chat: (data.chat || []).map((c: any) => ({...c, time: safeTimestampToISO(c.time) })),
     } as unknown as OnboardingSubmission;
 }
 
@@ -194,10 +212,10 @@ export async function getSubmissionById(submissionId: string): Promise<Onboardin
             id: docSnap.id,
             ...data,
             partnerEmail: user?.email || 'N/A',
-            lastUpdated: (data.lastUpdated as Timestamp).toDate().toISOString(),
-            createdAt: (data.createdAt as Timestamp).toDate().toISOString(),
-            timeline: (data.timeline || []).map((t: any) => ({ ...t, date: (t.date instanceof Timestamp ? t.date.toDate().toISOString() : new Date(t.date).toISOString()) })),
-            chat: (data.chat || []).map((c: any) => ({...c, time: (c.time instanceof Timestamp ? c.time.toDate().toISOString() : new Date(c.time).toISOString()) })),
+            lastUpdated: safeTimestampToISO(data.lastUpdated),
+            createdAt: safeTimestampToISO(data.createdAt),
+            timeline: (data.timeline || []).map((t: any) => ({ ...t, date: safeTimestampToISO(t.date) })),
+            chat: (data.chat || []).map((c: any) => ({...c, time: safeTimestampToISO(c.time) })),
         } as OnboardingSubmission;
     } else {
         return null;
@@ -218,7 +236,7 @@ export async function getOrCreateSubmissionForUser(): Promise<OnboardingSubmissi
     const newSubmissionData = {
         partnerId: user.uid,
         partnerName: "New Partner", // Default name, to be updated in step 1
-        status: 'In Progress',
+        status: 'in-progress',
         createdAt: serverTimestamp(),
         lastUpdated: serverTimestamp(),
         timeline: [
@@ -260,10 +278,10 @@ export async function getOrCreateSubmissionForUser(): Promise<OnboardingSubmissi
     return {
         id: docRef.id,
         ...data,
-        lastUpdated: (data.lastUpdated as Timestamp).toDate().toISOString(),
-        createdAt: (data.createdAt as Timestamp).toDate().toISOString(),
-        timeline: (data.timeline || []).map((t: any) => ({ ...t, date: (t.date instanceof Timestamp ? t.date.toDate().toISOString() : new Date(t.date).toISOString()) })),
-        chat: (data.chat || []).map((c: any) => ({...c, time: (c.time instanceof Timestamp ? c.time.toDate().toISOString() : new Date(c.time).toISOString()) })),
+        lastUpdated: safeTimestampToISO(data.lastUpdated),
+        createdAt: safeTimestampToISO(data.createdAt),
+        timeline: (data.timeline || []).map((t: any) => ({ ...t, date: safeTimestampToISO(t.date) })),
+        chat: (data.chat || []).map((c: any) => ({...c, time: safeTimestampToISO(c.time) })),
     } as unknown as OnboardingSubmission;
 }
 

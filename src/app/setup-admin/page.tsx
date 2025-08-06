@@ -13,11 +13,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff } from 'lucide-react';
+import { createSuperAdmin } from '@/lib/actions/auth';
 
 export default function SetupAdminPage() {
   const [email, setEmail] = useState('');
@@ -29,27 +27,26 @@ export default function SetupAdminPage() {
   const handleCreateAdmin = async (event: React.FormEvent) => {
     event.preventDefault();
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Save user role to Firestore
-      await setDoc(doc(db, "users", user.uid), {
-        email: user.email,
-        role: 'superadmin',
-        canManageUsers: true, // Superadmins can always manage users
-      });
-
-      toast({
-        title: 'Admin Created',
-        description: 'Super admin account created successfully.',
-      });
-      router.push('/login');
+      const result = await createSuperAdmin(email, password);
+      
+      if (result.success) {
+        toast({
+          title: 'Admin Created',
+          description: 'Super admin account created successfully.',
+        });
+        router.push('/login');
+      } else {
+        toast({
+          variant: 'destructive',
+          title: 'Admin Creation Failed',
+          description: result.message || 'Could not create super admin account. Please try again.',
+        });
+      }
     } catch (error) {
       toast({
         variant: 'destructive',
         title: 'Admin Creation Failed',
-        description:
-          'Could not create super admin account. Please try again.',
+        description: 'Could not create super admin account. Please try again.',
       });
       console.error('Admin creation error:', error);
     }

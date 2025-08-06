@@ -169,7 +169,7 @@ export function EnhancedFileUpload({
         title: 'File Removed',
         description: 'File has been successfully removed.',
       });
-    } catch (error) {
+    } catch {
       toast({
         variant: 'destructive',
         title: 'Remove Failed',

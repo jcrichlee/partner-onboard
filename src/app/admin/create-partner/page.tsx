@@ -13,12 +13,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase/client';
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { createPartner } from '@/lib/actions/auth';
 
 export default function CreatePartnerPage() {
   const [email, setEmail] = useState('');
@@ -30,42 +27,39 @@ export default function CreatePartnerPage() {
   const handleCreatePartner = async (event: React.FormEvent) => {
     event.preventDefault();
     
-    // Create a temporary, secondary Firebase app instance.
-    const secondaryApp = initializeApp(auth.app.options, `secondary-app-${Date.now()}`);
-    const secondaryAuth = getAuth(secondaryApp);
-
     try {
-      const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
-      const user = userCredential.user;
-
-      await setDoc(doc(db, "users", user.uid), {
-        email: user.email,
-        role: 'partner',
-      });
-
-      try {
-        const loginUrl = window.location.origin + '/login';
-        const credentialsText = `Hi Partner,\n\nHere's your login credential for the onboard portal\n\nemail address - ${email}\npassword - ${password}\nlogin url - ${loginUrl}`;
-        await navigator.clipboard.writeText(credentialsText);
+      const result = await createPartner(email, password);
+      
+      if (result.success) {
+        try {
+          const loginUrl = window.location.origin + '/login';
+          const credentialsText = `Hi Partner,\n\nHere's your login credential for the onboard portal\n\nemail address - ${email}\npassword - ${password}\nlogin url - ${loginUrl}`;
+          await navigator.clipboard.writeText(credentialsText);
+          toast({
+            title: 'Partner Created & Copied',
+            description: 'Partner credentials have been copied to your clipboard.',
+          });
+        } catch (copyError) {
+          console.error('Failed to copy credentials:', copyError);
+          toast({
+            title: 'Partner Created',
+            description: 'Partner account was created, but credentials could not be copied.',
+          });
+        }
+        
+        router.push('/admin');
+      } else {
         toast({
-          title: 'Partner Created & Copied',
-          description: 'Partner credentials have been copied to your clipboard.',
-        });
-      } catch (copyError) {
-        console.error('Failed to copy credentials:', copyError);
-        toast({
-          title: 'Partner Created',
-          description: 'Partner account was created, but credentials could not be copied.',
+          variant: 'destructive',
+          title: 'Partner Creation Failed',
+          description: result.message || 'Could not create partner account. Please try again.',
         });
       }
-
-      router.push('/admin');
     } catch (error) {
       toast({
         variant: 'destructive',
         title: 'Partner Creation Failed',
-        description:
-          'Could not create partner account. Please try again.',
+        description: 'Could not create partner account. Please try again.',
       });
       console.error('Partner creation error:', error);
     }

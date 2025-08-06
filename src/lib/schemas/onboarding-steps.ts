@@ -88,12 +88,7 @@ export const CompleteOnboardingSchema = z.object({
 
 // Onboarding step configuration
 export const ONBOARDING_STEPS = [
-  {
-    id: 'company-incorporation',
-    title: 'Company Incorporation & Legal Status',
-    description: 'Critical for verifying legal existence and shareholding structure',
-    schema: CompanyIncorporationSchema,
-    route: '/onboarding/company-incorporation',
+  {    id: 'company-info',    title: 'Company Information',    description: 'Critical for verifying legal existence and shareholding structure',    schema: CompanyIncorporationSchema,    route: '/onboarding/company-info',
     fields: [
       {
         id: 'companyWebsite',
@@ -373,7 +368,7 @@ export const ONBOARDING_STEPS = [
         type: 'textarea' as const,
         description: 'If applicable, describe their role in the company and level of influence',
         required: false,
-        condition: (values: any) => values.pepDeclaration === 'yes',
+        condition: (_values: any) => _values.pepDeclaration === 'yes',
       },
     ],
   },
@@ -402,7 +397,7 @@ export interface OnboardingField {
   description?: string;
   required?: boolean;
   options?: readonly { readonly value: string; readonly label: string }[];
-  condition?: (values: any) => boolean;
+  condition?: (_values: any) => boolean;
   tooltip?: string;
   templateUrl?: string;
   accept?: string;
@@ -417,7 +412,7 @@ export interface OnboardingStep {
   description: string;
   schema: z.ZodSchema;
   route: string;
-  fields: OnboardingField[];
+  fields: readonly OnboardingField[];
 }
 
 // Additional type definitions for the onboarding system

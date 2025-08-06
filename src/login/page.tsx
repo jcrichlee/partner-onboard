@@ -48,7 +48,7 @@ export default function LoginPage() {
         if (userData.role === 'partner') {
             const submission = await getSubmissionForUser(user.uid);
             // If submission is in progress or requires attention, go to dashboard to resume.
-            if (submission && (submission.status === 'In Progress' || submission.status === 'Requires Attention')) {
+            if (submission && (submission.status === 'in-progress' || submission.status === 'requires-attention')) {
                 router.push('/partner/dashboard');
             } else if (submission) { // For other statuses like Submitted, Approved, etc.
                 router.push('/partner/dashboard');
@@ -145,7 +145,7 @@ export default function LoginPage() {
             </Button>
           </form>
           <div className="mt-4 text-center text-sm">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="#" className="underline text-primary">
               Contact us
             </Link>

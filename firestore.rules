@@ -5,15 +5,22 @@ service cloud.firestore {
 
     // Helper function to check for admin roles
     function isAdmin() {
-      return exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+      return request.auth != null &&
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
              get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'superadmin'];
+    }
+    
+    // Helper function to check if user can access their own data
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
     }
 
     // Rules for the 'users' collection
     match /users/{userId} {
       // Admins can manage any user document
-      // Users can read/update their own document
-      allow read, update: if isAdmin() || request.auth.uid == userId;
+      // Users can read/update their own document (allow read even if document doesn't exist yet)
+      allow read: if isAdmin() || isOwner(userId);
+      allow update: if isAdmin() || isOwner(userId);
       // Any authenticated user can create their user document
       allow create: if request.auth.uid != null;
       // Admins can delete users
@@ -23,12 +30,20 @@ service cloud.firestore {
     // Rules for the 'onboardingSubmissions' collection
     match /onboardingSubmissions/{submissionId} {
       // Admins can read any submission
-      // Partners can read their own submission
-      allow read: if isAdmin() || get(/databases/$(database)/documents/onboardingSubmissions/$(submissionId)).data.partnerId == request.auth.uid;
+      // Partners can read their own submission (including queries)
+      allow read: if isAdmin() || 
+                     (request.auth != null && 
+                      resource.data.partnerId == request.auth.uid);
+      
+      // Allow list operations (queries) for authenticated users
+      // This enables the where("partnerId", "==", userId) query to work
+      allow list: if isAdmin() || request.auth != null;
       
       // Admins can update any submission
       // Partners can update their own submission
-      allow update: if isAdmin() || get(/databases/$(database)/documents/onboardingSubmissions/$(submissionId)).data.partnerId == request.auth.uid;
+      allow update: if isAdmin() || 
+                       (request.auth != null && 
+                        resource.data.partnerId == request.auth.uid);
       
       // Only authenticated users (partners) can create submissions
       allow create: if request.auth.uid != null && request.resource.data.partnerId == request.auth.uid;

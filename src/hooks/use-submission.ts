@@ -6,10 +6,10 @@ import { type OnboardingSubmission, type OnboardingFile } from '@/lib/firestore'
 
 export interface SubmissionContextType {
   submission: OnboardingSubmission | null;
-  setSubmission: (submission: OnboardingSubmission | null) => void;
-  update: (data: Partial<OnboardingSubmission>) => Promise<void>;
-  addFile: (file: OnboardingFile) => Promise<void>;
-  removeFile: (storagePath: string) => Promise<void>;
+  setSubmission: (_submission: OnboardingSubmission | null) => void;
+  update: (_data: Partial<OnboardingSubmission>) => Promise<void>;
+  addFile: (_file: OnboardingFile) => Promise<void>;
+  removeFile: (_storagePath: string) => Promise<void>;
   isLoading: boolean;
 }
 

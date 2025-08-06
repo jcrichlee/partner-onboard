@@ -8,6 +8,7 @@ import {
   ONBOARDING_STEPS,
   type OnboardingStepData
 } from '@/lib/schemas/onboarding-steps';
+import { type OnboardingSubmission } from '@/lib/firestore';
 
 export type OnboardingStatus = 'not-started' | 'in-progress' | 'completed' | 'submitted';
 
@@ -309,13 +310,14 @@ export function useOnboardingManager() {
       setIsLoading(true);
       setError(null);
 
-      await updateSubmission({
+      const updateData: Partial<OnboardingSubmission> = {
         steps: {},
         currentStep: ONBOARDING_STEPS[0].id,
         status: 'draft',
-        completedAt: undefined,
         lastUpdated: new Date().toISOString()
-      });
+      };
+      
+      await updateSubmission(updateData);
 
       toast({
         title: 'Onboarding Reset',

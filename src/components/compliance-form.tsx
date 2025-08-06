@@ -53,7 +53,7 @@ export function ComplianceForm() {
         // Files are handled by the FileUpload components
         const updateData = {
             pepDisclosure: values.pepDisclosure,
-            pepDetails: values.pepDetails,
+            pepDetails: values.pepDetails || '',
         };
 
         await updateSubmissionData(updateData);

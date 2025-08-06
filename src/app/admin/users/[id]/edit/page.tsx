@@ -27,7 +27,7 @@ import { MultiSelect } from '@/components/ui/multi-select';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { getUserById, updateUser, UserProfile, StagePermission, StagePermissionsMap } from '@/lib/firestore';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/hooks/use-auth-client';
 
 
 const stageOptions = [
@@ -84,7 +84,7 @@ export default function EditUserPage({ params }: { params: Promise<{ id: string 
     fetchUser();
   }, [resolvedParams.id, authLoading, userProfile, router, toast]);
 
-  const handleStageSelectionChange = (selectedStages: string[] | ((prev: string[]) => string[])) => {
+  const handleStageSelectionChange = (selectedStages: string[] | ((_prev: string[]) => string[])) => {
     const stages = typeof selectedStages === 'function' ? selectedStages(Object.keys(stagePermissions)) : selectedStages;
     const newPermissions: StagePermissionsMap = {};
     stages.forEach(stage => {

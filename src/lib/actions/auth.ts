@@ -23,6 +23,11 @@ export async function createUser(formData: FormData) {
       password: validatedData.password,
     });
 
+    // Set custom claims for Firebase Auth
+    await adminAuth.setCustomUserClaims(userRecord.uid, {
+      role: validatedData.role,
+    });
+
     // Create user profile in Firestore
     await adminDb.collection("users").doc(userRecord.uid).set({
       email: validatedData.email,
@@ -105,6 +110,119 @@ export async function toggleUserStatus(
     return { 
       success: false, 
       message: error instanceof Error ? error.message : "Failed to update user status" 
+    };
+  }
+}
+
+// Server action for creating partner users
+export async function createPartner(email: string, password: string) {
+  try {
+    // Create user in Firebase Auth
+    const userRecord = await adminAuth.createUser({
+      email: email,
+      password: password,
+    });
+
+    // Set custom claims for Firebase Auth
+    await adminAuth.setCustomUserClaims(userRecord.uid, {
+      role: 'partner',
+    });
+
+    // Create user profile in Firestore
+    await adminDb.collection("users").doc(userRecord.uid).set({
+      email: email,
+      role: 'partner',
+      stagePermissions: {},
+      canManageUsers: false,
+      disabled: false,
+      notifications: [],
+      createdAt: new Date().toISOString(),
+    });
+
+    revalidatePath("/admin");
+    return { success: true, message: "Partner created successfully", uid: userRecord.uid };
+  } catch (error) {
+    console.error("Error creating partner:", error);
+    return { 
+      success: false, 
+      message: error instanceof Error ? error.message : "Failed to create partner" 
+    };
+  }
+}
+
+// Server action for creating superadmin users (initial setup)
+export async function createSuperAdmin(email: string, password: string) {
+  try {
+    // Create user in Firebase Auth
+    const userRecord = await adminAuth.createUser({
+      email: email,
+      password: password,
+    });
+
+    // Set custom claims for Firebase Auth
+    await adminAuth.setCustomUserClaims(userRecord.uid, {
+      role: 'superadmin',
+    });
+
+    // Create user profile in Firestore
+    await adminDb.collection("users").doc(userRecord.uid).set({
+      email: email,
+      role: 'superadmin',
+      stagePermissions: {},
+      canManageUsers: true,
+      disabled: false,
+      notifications: [],
+      createdAt: new Date().toISOString(),
+    });
+
+    return { success: true, message: "Super admin created successfully", uid: userRecord.uid };
+  } catch (error) {
+    console.error("Error creating super admin:", error);
+    return { 
+      success: false, 
+      message: error instanceof Error ? error.message : "Failed to create super admin" 
+    };
+  }
+}
+
+// Server action for creating admin users with stage permissions
+export async function createAdmin(
+  email: string, 
+  password: string, 
+  role: string, 
+  stagePermissions: Record<string, string[]>, 
+  canManageUsers: boolean
+) {
+  try {
+    // Create user in Firebase Auth
+    const userRecord = await adminAuth.createUser({
+      email: email,
+      password: password,
+    });
+
+    // Set custom claims for Firebase Auth
+    await adminAuth.setCustomUserClaims(userRecord.uid, {
+      role: role,
+    });
+
+    // Create user profile in Firestore
+    await adminDb.collection("users").doc(userRecord.uid).set({
+      email: email,
+      role: role,
+      stagePermissions: stagePermissions,
+      canManageUsers: canManageUsers,
+      disabled: false,
+      notifications: [],
+      createdAt: new Date().toISOString(),
+    });
+
+    revalidatePath("/admin");
+    return { success: true, message: "Admin created successfully", uid: userRecord.uid };
+  } catch (error) {
+    console.error("Error creating admin:", error);
+    return { 
+      success: false, 
+      message: error instanceof Error ? error.message : "Failed to create admin" 
     };
   }
 }

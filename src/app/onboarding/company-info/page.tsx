@@ -28,7 +28,7 @@ export default function CompanyInfoPage() {
           Step 1: Company Information
         </CardTitle>
         <CardDescription>
-          Please provide your company's incorporation details and official
+          Please provide your company&apos;s incorporation details and official
  documents. Your progress is saved automatically.
         </CardDescription>
       </CardHeader>

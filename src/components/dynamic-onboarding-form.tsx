@@ -24,40 +24,32 @@ import {
 import { cn } from "@/lib/utils";
 
 type DynamicOnboardingFormProps = {
-  stepId: string;
+  step: OnboardingStepConfig;
   className?: string;
 };
 
 /**
- * Dynamic Onboarding Form Component
- * Implements the globally accepted approach from ONBOARDSTEPS.md:
- * - Renders any onboarding step based on configuration
- * - Handles all field types: text, url, file, radio
- * - Supports conditional field rendering
- * - Integrates with Firebase for data persistence
- * - Provides consistent validation and error handling
+ * Form Content Component - handles the actual form logic
  */
-export function DynamicOnboardingForm({ stepId, className }: DynamicOnboardingFormProps) {
+function FormContent({ 
+  stepId, 
+  currentStep, 
+  currentStepIndex, 
+  totalSteps, 
+  progress,
+  className 
+}: {
+  stepId: string;
+  currentStep: OnboardingStepConfig;
+  currentStepIndex: number;
+  totalSteps: number;
+  progress: number;
+  className?: string;
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const { submission, updateSubmission } = useSubmission();
-  
-  // Find the current step configuration
-  const currentStep = ONBOARDING_STEPS.find(step => step.id === stepId);
-  const currentStepIndex = ONBOARDING_STEPS.findIndex(step => step.id === stepId);
-  const totalSteps = ONBOARDING_STEPS.length;
-  const progress = ((currentStepIndex + 1) / totalSteps) * 100;
-  
-  if (!currentStep) {
-    return (
-      <Card className={className}>
-        <CardContent className="p-6">
-          <p className="text-destructive">Step configuration not found: {stepId}</p>
-        </CardContent>
-      </Card>
-    );
-  }
 
   // Get existing data for this step from submission
   const existingData = submission?.steps?.[stepId] || {};
@@ -353,5 +345,33 @@ export function DynamicOnboardingForm({ stepId, className }: DynamicOnboardingFo
         </Card>
       </div>
     </FormProvider>
+  );
+}
+
+/**
+ * Dynamic Onboarding Form Component
+ * Implements the globally accepted approach from ONBOARDSTEPS.md:
+ * - Renders any onboarding step based on configuration
+ * - Handles all field types: text, url, file, radio
+ * - Supports conditional field rendering
+ * - Integrates with Firebase for data persistence
+ * - Provides consistent validation and error handling
+ */
+export function DynamicOnboardingForm({ step, className }: DynamicOnboardingFormProps) {
+  // Find the current step configuration
+  const currentStep = step;
+  const currentStepIndex = ONBOARDING_STEPS.findIndex(s => s.id === step.id);
+  const totalSteps = ONBOARDING_STEPS.length;
+  const progress = ((currentStepIndex + 1) / totalSteps) * 100;
+  
+  return (
+    <FormContent
+      stepId={step.id}
+      currentStep={currentStep}
+      currentStepIndex={currentStepIndex}
+      totalSteps={totalSteps}
+      progress={progress}
+      className={className || ""}
+    />
   );
 }

@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { SubmissionContext, SubmissionContextType, useSubmission } from './use-submission';
 import { OnboardingSubmission, getOrCreateSubmissionForUser, updateSubmission, OnboardingFile } from '@/lib/firestore';
 import { useToast } from './use-toast';
-import { useAuth } from './use-auth';
+import { useAuth } from './use-auth-client';
 import { deleteUserFile } from '@/lib/storage';
 
 export function SubmissionProvider({ children }: { children: React.ReactNode }) {

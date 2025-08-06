@@ -15,7 +15,7 @@ import { LogOut, Bell, User } from "lucide-react";
 import { signOut } from "firebase/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth-client";
 import { UserNotification, updateUser } from "@/lib/firestore";
 import { cn } from "@/lib/utils";
 

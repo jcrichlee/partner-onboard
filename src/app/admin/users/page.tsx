@@ -82,7 +82,7 @@ export default function UserManagementPage() {
       await updateUser(user.id, { disabled: !user.disabled });
       setUsers(users.map(u => u.id === user.id ? { ...u, disabled: !u.disabled } : u));
       toast({ title: 'Success', description: `User has been ${user.disabled ? 'enabled' : 'disabled'}.` });
-    } catch (error) {
+    } catch {
       toast({ variant: 'destructive', title: 'Error', description: 'Failed to update user status.' });
     }
   };
@@ -93,7 +93,7 @@ export default function UserManagementPage() {
       await deleteUser(userId);
       setUsers(users.filter(u => u.id !== userId));
       toast({ title: 'Success', description: 'User has been deleted.' });
-    } catch (error) {
+    } catch {
        toast({ variant: 'destructive', title: 'Error', description: 'Failed to delete user.' });
     }
   };
@@ -205,7 +205,7 @@ export default function UserManagementPage() {
                                 <AlertDialogHeader>
                                 <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                                 <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete the user's account and associated data from the database.
+                                    This action cannot be undone. This will permanently delete the user&apos;s account and associated data from the database.
                                 </AlertDialogDescription>
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>

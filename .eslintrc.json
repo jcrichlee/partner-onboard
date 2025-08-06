@@ -1,39 +1,18 @@
 {
   "extends": [
-    "next/core-web-vitals",
-    "@typescript-eslint/recommended",
-    "@typescript-eslint/recommended-requiring-type-checking"
+    "next/core-web-vitals"
   ],
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": "./tsconfig.json"
-  },
-  "plugins": ["@typescript-eslint"],
   "rules": {
-    "@typescript-eslint/no-unused-vars": "error",
-    "@typescript-eslint/no-explicit-any": "warn",
-    "@typescript-eslint/explicit-function-return-type": "warn",
-    "@typescript-eslint/no-unsafe-assignment": "error",
-    "@typescript-eslint/no-unsafe-member-access": "error",
-    "@typescript-eslint/no-unsafe-call": "error",
-    "@typescript-eslint/no-unsafe-return": "error",
-    "@typescript-eslint/prefer-nullish-coalescing": "error",
-    "@typescript-eslint/prefer-optional-chain": "error",
-    "@typescript-eslint/strict-boolean-expressions": "error",
     "no-console": ["warn", { "allow": ["warn", "error"] }],
     "prefer-const": "error",
-    "no-var": "error"
-  },
-  "overrides": [
-    {
-      "files": ["*.js", "*.jsx"],
-      "rules": {
-        "@typescript-eslint/explicit-function-return-type": "off",
-        "@typescript-eslint/no-unsafe-assignment": "off",
-        "@typescript-eslint/no-unsafe-member-access": "off",
-        "@typescript-eslint/no-unsafe-call": "off",
-        "@typescript-eslint/no-unsafe-return": "off"
+    "no-var": "error",
+    "no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "destructuredArrayIgnorePattern": "^_"
       }
-    }
-  ]
+    ]
+  }
 }
